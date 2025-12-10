@@ -18,7 +18,7 @@ class UserModel extends Model
     {
         if ($keyword) {
             return $this->where("username ILIKE '%{$keyword}%' 
-                                OR email ILIKE '%{$keyword}%'")
+                                OR email ILIKE '%{$keyword}%'")->orderBy('id', 'ASC')
                 ->findAll();
         }
         return $this->findAll();

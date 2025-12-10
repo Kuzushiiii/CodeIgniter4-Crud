@@ -100,14 +100,13 @@ class UserController extends BaseController
     public function fetch()
     {
         $keyword = $this->request->getGet('keyword');//mengambil parameter keyword dari AJAX
-
         $userModel = new UserModel();
 
         //jika ada keyword, cari user berdasarkan username atau email
         if ($keyword !== null && $keyword !== '') {
             $users = $userModel->search($keyword); //panggil method search di UserModel jika ada keyword
         } else {
-            $users = $userModel->findAll();//ambil semua user jika tidak ada keyword
+            $users = $userModel->orderBy('id', 'ASC')->findAll();//ambil semua user jika tidak ada keyword
         }
 
         return $this->response->setJSON(array_values($users));
