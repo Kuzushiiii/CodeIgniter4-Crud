@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AJAX CRUD Users</title>
+    <title>CRUD AJAX CI4 - Tian</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -31,6 +31,10 @@
             border-collapse: collapse;
             margin-top: 20px;
             margin: auto;
+            box-shadow: 0 10px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            background-color: #ffffff;
+            text-align: center;
 
         }
 
@@ -120,7 +124,6 @@
 
 <body>
     <h2>Data User</h2>
-    <h4>M Tiansyah Wahyudi Putra</h4>
 
     <h3 style="margin-left:300px;">Cari Data User</h3>
     <input
@@ -214,7 +217,9 @@
         // Muat data user saat halaman dimuat
         fetchUsers();
     </script>
-
+<footer>
+    <h4 style="text-align:center; margin-top:20px;">M Tiansyah Wahyudi Putra</h4>
+</footer>
 </body>
 
 </html>

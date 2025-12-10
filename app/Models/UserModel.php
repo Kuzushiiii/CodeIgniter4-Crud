@@ -18,10 +18,10 @@ class UserModel extends Model
     {
         if ($keyword) {
             return $this->where("username ILIKE '%{$keyword}%' 
-                                OR email ILIKE '%{$keyword}%'")->orderBy('id', 'ASC')
+                                OR email ILIKE '%{$keyword}%'")
                 ->findAll();
         }
-        return $this->findAll();
+        return $this->orderBy('id', 'ASC')->findAll();
     }
 
     protected bool $allowEmptyInserts = false;

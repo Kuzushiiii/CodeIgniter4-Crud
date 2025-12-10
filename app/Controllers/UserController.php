@@ -106,7 +106,7 @@ class UserController extends BaseController
         if ($keyword !== null && $keyword !== '') {
             $users = $userModel->search($keyword); //panggil method search di UserModel jika ada keyword
         } else {
-            $users = $userModel->orderBy('id', 'ASC')->findAll();//ambil semua user jika tidak ada keyword
+            $users = $userModel->findAll();//ambil semua user jika tidak ada keyword
         }
 
         return $this->response->setJSON(array_values($users));
