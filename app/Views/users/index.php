@@ -149,46 +149,44 @@
         </tbody>
     </table>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
-        //ambil elemen cari dan tabel berdasarkan id
-        const cariInput = document.getElementById('cari');
-        const userTable = document.getElementById('userTable');
+        const cariInput = $('#cari');
+        const userTable = $('#userTable');
 
-        //event keyup untuk input pencarian
-        //saat user mengetik, AJAX akan mengirim permintaan ke controller
-        cariInput.addEventListener('keyup', () => {
-            fetchUsers(cariInput.value);
+        cariInput.on('keyup', function() {
+            fetchUsers(cariInput.val());
         });
 
-        //fungsi untuk mengambil data user dari controller
+        //Mengambil data user dari server
         function fetchUsers(keyword = '') {
-            fetch('/users/fetch?keyword=' + encodeURIComponent(keyword))
-                .then(response => response.json())
-                .then(data => {
-                    //data dari controller berupa array
-                    if (Array.isArray(data)) {
-                        renderTable(data);
-                    } else {
-                        renderTable([]);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching users:', error);
-                    renderTable([]);
-                });
+            $.ajax({
+                url: '/users/fetch',
+                type: 'GET',
+                data: {
+                    keyword: keyword
+                },
+                dataType: 'json',
+                success: function(users) {
+                    renderTable(users);
+                },
+                error: function() {
+                    userTable.html('<tr><td colspan="4">Gagal memuat data user</td></tr>');
+                }
+            });
         }
 
-        //fungsi untuk menampilkan data user di tabel
+        //Render tabel user
         function renderTable(users) {
-            userTable.innerHTML = '';
-
-            if (!Array.isArray(users)) {
+            userTable.empty();
+            if (users.length === 0 ) {
+                userTable.html('<tr><td colspan="4">Data user tidak dtemukan</td></tr>');
                 return;
             }
 
             users.forEach(user => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
+                userTable.append(`
+                <tr>
                     <td>${user.id}</td>
                     <td>${user.username}</td>
                     <td>${user.email}</td>
@@ -196,30 +194,36 @@
                         <button class="edtbtn" onclick="window.location.href='/users/edit/${user.id}'">Edit</button>
                         <button class="dltbtn" onclick="deleteUser(${user.id}, '${user.username}')">Delete</button>
                     </td>
-                `;
-                userTable.appendChild(row);
+                </tr>
+            `);
             });
         }
 
-        //fungsi untuk menghapus user menggunakan AJAX metode DELETE
-        window.deleteUser = function(id, username) {
-            if (confirm('Hapus user ' + username + ' dengan id : ' + id + ' ?')) {
-                fetch('/users/delete/' + id, {
-                        method: 'DELETE'
-                    })
-                    .then(r => r.json())
-                    .then(res => {
-                        alert(res.message);
-                        fetchUsers();
-                    });
+        //Hapus user
+        function deleteUser(id, username) {
+            if (confirm(`Apakah anda yakin ingin menghapus user ${username} dengan id : ${id}?`  )) {
+                $.ajax({
+                    url: `/users/delete/` + id,
+                    type: 'DELETE',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest' //menandai ini sebagai permintaan AJAX
+                    },
+                    success: function(response) {
+                        alert(response.message);
+                        fetchUsers(cariInput.val());
+                    },
+                    error: function() {
+                        alert('Gagal menghapus user.');
+                    }
+                });
             }
-        };
-        // Muat data user saat halaman dimuat
+        }
+        
         fetchUsers();
     </script>
-<footer>
-    <h4 style="text-align:center; margin-top:20px;">M Tiansyah Wahyudi Putra</h4>
-</footer>
+    <footer>
+        <h4 style="text-align:center; margin-top:20px;">M Tiansyah Wahyudi Putra</h4>
+    </footer>
 </body>
 
 </html>

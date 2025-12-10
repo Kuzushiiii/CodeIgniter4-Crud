@@ -14,14 +14,13 @@ class UserModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = ['username', 'email', 'password', 'created_at', 'updated_at'];
 
-    public function search($keyword)
+    public function search($keyword = null)
     {
+        $builder = $this->builder();
         if ($keyword) {
-            return $this->where("username ILIKE '%{$keyword}%' 
-                                OR email ILIKE '%{$keyword}%'")
-                ->findAll();
+            $builder->where("username ILIKE '%{$keyword}%' OR email ILIKE '%{$keyword}%'");
         }
-        return $this->orderBy('id', 'ASC')->findAll();
+        return $builder->orderBy('id', 'ASC')->get()->getResultArray();
     }
 
     protected bool $allowEmptyInserts = false;
