@@ -108,29 +108,35 @@
 
     <p id="msg"></p>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
-        //menangani submit form create
-        document.getElementById('createForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+            $('#createForm').on('submit', function(e) {
+                e.preventDefault();
 
-            //mengirim data form ke server menggunakan fetch API
-            fetch('/users/store', {
-                    method: 'POST',
-                    body: new FormData(this),
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest' //menandai ini sebagai permintaan AJAX
-                    }
-                })
-                .then(res => res.json())
-                .then(result => {
-                    document.getElementById('msg').innerText = result.message;
-                    if (result.status) {
-                        setTimeout(() => {
-                            window.location.href = '/users';
-                        }, 1000);
+                const formData = $(this).serialize();
+
+                $.ajax({
+                    url: '/users/store',
+                    type: 'POST',
+                    data: formData,
+                    dataType: 'json',
+                    success: function(response) {
+                        $('#msg').text(response.message);
+                        if (response.status) {
+                            $('#msg').css('color', 'green');
+                            $('#createForm')[0].reset();
+                            setTimeout(() => {
+                                window.location.href = '/users';
+                            }, 1500);
+                        } else {
+                            $('#msg').css('color', 'red');
+                        }
+                    },
+                    error: function() {
+                        $('#msg').text('Terjadi kesalahan saat menyimpan data.').css('color', 'red');
                     }
                 });
-        });
+            });
     </script>
 </body>
 

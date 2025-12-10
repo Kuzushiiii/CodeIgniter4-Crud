@@ -76,12 +76,12 @@
             text-decoration: none;
             color: inherit;
         }
-        
+
         #msg {
             text-align: center;
             margin-top: 20px;
             font-weight: bold;
-            color : green;
+            color: green;
         }
     </style>
 </head>
@@ -106,28 +106,32 @@
 
     <p id="msg"></p>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
-        //menangani submit form edit
-        document.getElementById('editForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        $('#editForm').on('submit', function(e) {
+            e.preventDefault(); // prevent page reload
 
-            //mengirim data form ke server menggunakan fetch API
-            fetch('/users/update/<?= $user['id'] ?>', {
-                    method: 'POST',
-                    body: new FormData(this),
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest' //menandai ini sebagai permintaan AJAX
-                    }
-                })
-                .then(res => res.json())
-                .then(result => {
-                    document.getElementById('msg').innerText = result.message;
-                    if (result.status) {
-                        setTimeout(() => {
-                            window.location.href = '/users';
-                        }, 1000);
-                    }
-                });
+            const id = $('input[name="id"]').val();
+            const username = $('input[name="username"]').val();
+            const email = $('input[name="email"]').val();
+
+            $.ajax({
+                url: '/users/update/' + id,
+                type: 'POST',
+                data: {
+                    username: username,
+                    email: email
+                },
+                success: function(response) {
+                    $('#msg').text(response.message);
+                    setTimeout(() => {
+                        window.location.href = '/users';
+                    }, 1500);
+                },
+                error: function() {
+                    $('#msg').text('Error updating user');
+                }
+            });
         });
     </script>
 </body>
