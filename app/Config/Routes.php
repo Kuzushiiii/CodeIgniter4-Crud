@@ -11,9 +11,11 @@ $routes->setAutoRoute(false);
 $routes->get('/', 'Home::index');
 $routes->get('/dbtest', 'DbTest::index');
 
+// User Routes
 $routes->get('/users', 'UserController::index');
 $routes->get('/users/fetch', 'UserController::fetch');
 
+// Routes untuk operasi CRUD pada user
 $routes->get('/users/create', 'UserController::create');
 $routes->post('/users/store', 'UserController::store');
 $routes->get('/users/edit/(:num)', 'UserController::edit/$1');

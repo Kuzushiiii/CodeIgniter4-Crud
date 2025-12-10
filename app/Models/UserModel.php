@@ -14,6 +14,16 @@ class UserModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = ['username', 'email', 'password', 'created_at', 'updated_at'];
 
+    public function search($keyword)
+    {
+        if ($keyword) {
+            return $this->where("username ILIKE '%{$keyword}%' 
+                                OR email ILIKE '%{$keyword}%'")
+                ->findAll();
+        }
+        return $this->findAll();
+    }
+
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
 

@@ -11,7 +11,7 @@
             margin: 50px;
             background-color: #F0F8FF;
         }
-        
+
         h2 {
             text-align: center;
             margin-bottom: 20px;
@@ -147,69 +147,72 @@
     </table>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        //ambil elemen cari dan tabel berdasarkan id
+        const cariInput = document.getElementById('cari');
+        const userTable = document.getElementById('userTable');
 
-            const searchInput = document.getElementById('cari');
-            const userTable = document.getElementById('userTable');
+        //event keyup untuk input pencarian
+        //saat user mengetik, AJAX akan mengirim permintaan ke controller
+        cariInput.addEventListener('keyup', () => {
+            fetchUsers(cariInput.value);
+        });
 
-            let usersData = []; // cache data
+        //fungsi untuk mengambil data user dari controller
+        function fetchUsers(keyword = '') {
+            fetch('/users/fetch?keyword=' + encodeURIComponent(keyword))
+                .then(response => response.json())
+                .then(data => {
+                    //data dari controller berupa array
+                    if (Array.isArray(data)) {
+                        renderTable(data);
+                    } else {
+                        renderTable([]);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching users:', error);
+                    renderTable([]);
+                });
+        }
 
-            function fetchUsers() {
-                fetch('/users/fetch')
-                    .then(res => res.json())
-                    .then(data => {
-                        usersData = data;
-                        renderTable(usersData);
+        //fungsi untuk menampilkan data user di tabel
+        function renderTable(users) {
+            userTable.innerHTML = '';
+
+            if (!Array.isArray(users)) {
+                return;
+            }
+
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.username}</td>
+                    <td>${user.email}</td>
+                    <td>
+                        <button class="edtbtn" onclick="window.location.href='/users/edit/${user.id}'">Edit</button>
+                        <button class="dltbtn" onclick="deleteUser(${user.id}, '${user.username}')">Delete</button>
+                    </td>
+                `;
+                userTable.appendChild(row);
+            });
+        }
+
+        //fungsi untuk menghapus user menggunakan AJAX metode DELETE
+        window.deleteUser = function(id, username) {
+            if (confirm('Hapus user ' + username + ' dengan id : ' + id + ' ?')) {
+                fetch('/users/delete/' + id, {
+                        method: 'DELETE'
+                    })
+                    .then(r => r.json())
+                    .then(res => {
+                        alert(res.message);
+                        fetchUsers();
                     });
             }
-
-
-            function renderTable(data) {
-                userTable.innerHTML = '';
-
-                data.forEach(user => {
-                    const row = document.createElement('tr');
-
-                    row.innerHTML = `
-                        <td>${user.id}</td>
-                        <td>${user.username}</td>
-                        <td>${user.email}</td>
-                        <td>
-                            <button class="edtbtn" onclick="window.location.href='/users/edit/${user.id}'">Edit</button>
-                            <button class="dltbtn" onclick="deleteUser(${user.id}, '${user.username}')">Delete</button>
-                        </td>
-                    `;
-
-                    userTable.appendChild(row);
-                });
-            }
-
-            document.getElementById('cari').addEventListener('keyup', function() {
-                const keyword = this.value.toLowerCase();
-
-                const filtered = usersData.filter(user =>
-                    user.username.toLowerCase().includes(keyword) ||
-                    user.email.toLowerCase().includes(keyword)
-                );
-
-                renderTable(filtered);
-            });
-
-            window.deleteUser = function(id, username) {
-                if (confirm('Hapus user ' + username + ' dengan id : ' + id + ' ?')) {
-                    fetch('/users/delete/' + id, {
-                            method: 'DELETE'
-                        })
-                        .then(r => r.json())
-                        .then(res => {
-                            alert(res.message);
-                            fetchUsers();
-                        });
-                }
-            };
-
-            fetchUsers();
-        });
+        };
+        // Muat data user saat halaman dimuat
+        fetchUsers();
     </script>
 
 </body>

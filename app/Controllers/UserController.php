@@ -8,13 +8,16 @@ use App\Models\UserModel;
 
 class UserController extends BaseController
 {
+    // Menampilkan halaman daftar user
     public function index()
     {
-        return view('users/index');
+        return view('users/index'); //menampilkan view daftar user dari folder users
     }
 
+    // Menyimpan user baru
     public function store()
     {
+        //mengambil data dari form
         $username = $this->request->getPost('username');
         $email    = $this->request->getPost('email');
         $password = $this->request->getPost('password');
@@ -47,11 +50,13 @@ class UserController extends BaseController
         ]);
     }
 
+    // Menampilkan form untuk membuat user baru
     public function create()
     {
         return view('users/create');
     }
 
+    // Memperbarui data user
     public function update($id)
     {
         $username = $this->request->getPost('username');
@@ -76,6 +81,7 @@ class UserController extends BaseController
         ]);
     }
 
+    // Menampilkan form edit user
     public function edit($id)
     {
         $userModel = new UserModel();
@@ -90,25 +96,24 @@ class UserController extends BaseController
         ]);
     }
 
+    // Mengambil data user untuk AJAX
     public function fetch()
     {
-        $keyword = $this->request->getGet('keyword');
+        $keyword = $this->request->getGet('keyword');//mengambil parameter keyword dari AJAX
 
         $userModel = new UserModel();
 
-        if ($keyword) {
-            $users = $userModel
-                ->like('username', $keyword)
-                ->orLike('email', $keyword)
-                ->findAll();
+        //jika ada keyword, cari user berdasarkan username atau email
+        if ($keyword !== null && $keyword !== '') {
+            $users = $userModel->search($keyword); //panggil method search di UserModel jika ada keyword
         } else {
-            $users = $userModel->findAll();
+            $users = $userModel->findAll();//ambil semua user jika tidak ada keyword
         }
 
-        return $this->response->setJSON($users);
+        return $this->response->setJSON(array_values($users));
     }
 
-
+    // Menghapus user
     public function delete($id)
     {
         $userModel = new UserModel();

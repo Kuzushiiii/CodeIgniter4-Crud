@@ -109,14 +109,16 @@
     <p id="msg"></p>
 
     <script>
+        //menangani submit form create
         document.getElementById('createForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
+            //mengirim data form ke server menggunakan fetch API
             fetch('/users/store', {
                     method: 'POST',
                     body: new FormData(this),
                     headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'X-Requested-With': 'XMLHttpRequest' //menandai ini sebagai permintaan AJAX
                     }
                 })
                 .then(res => res.json())
